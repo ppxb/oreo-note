@@ -1,8 +1,8 @@
 {
   "name": "oreo-note",
-  "private": true,
-  "version": "0.1.0",
   "type": "module",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
@@ -10,15 +10,18 @@
     "tauri": "tauri"
   },
   "dependencies": {
-    "vue": "^3.5.26",
     "@tauri-apps/api": "^2.9.1",
-    "@tauri-apps/plugin-opener": "^2.5.2"
+    "@tauri-apps/plugin-opener": "^2.5.2",
+    "vue": "^3.5.26"
   },
   "devDependencies": {
+    "@antfu/eslint-config": "^6.7.3",
+    "@tauri-apps/cli": "^2.9.6",
     "@vitejs/plugin-vue": "^6.0.3",
+    "eslint": "^9.39.2",
+    "eslint-plugin-format": "^1.2.0",
     "typescript": "^5.9.3",
     "vite": "^7.2.4",
-    "vue-tsc": "^3.2.2",
-    "@tauri-apps/cli": "^2.9.6"
+    "vue-tsc": "^3.2.2"
   }
 }
