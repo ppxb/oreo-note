@@ -1,32 +1,50 @@
-import { defineConfig } from "vite";
-import vue from "@vitejs/plugin-vue";
+import { fileURLToPath, URL } from 'node:url'
+import vue from '@vitejs/plugin-vue'
+import { defineConfig } from 'vite'
 
-// @ts-expect-error process is a nodejs global
-const host = process.env.TAURI_DEV_HOST;
+import { version as pkgVersion } from './package.json'
 
-// https://vite.dev/config/
-export default defineConfig(async () => ({
+const host = process.env.TAURI_DEV_HOST
+const platform = process.env.TAURI_ENV_PLATFORM
+
+process.env.VITE_APP_VERSION = pkgVersion
+if (process.env.NODE_ENV === 'production') {
+  process.env.VITE_APP_BUILD_EPOCH = new Date().getTime().toString()
+}
+
+export default defineConfig({
   plugins: [vue()],
-
-  // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
-  //
-  // 1. prevent Vite from obscuring rust errors
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
+  },
+  css: {
+    preprocessorMaxWorkers: true,
+  },
   clearScreen: false,
-  // 2. tauri expects a fixed port, fail if that port is not available
+  envPrefix: ['VITE_', 'TAURI_'],
   server: {
     port: 1420,
     strictPort: true,
     host: host || false,
     hmr: host
       ? {
-          protocol: "ws",
+          protocol: 'ws',
           host,
           port: 1421,
         }
       : undefined,
     watch: {
-      // 3. tell Vite to ignore watching `src-tauri`
-      ignored: ["**/src-tauri/**"],
+      ignored: ['**/src-tauri/**'],
     },
   },
-}));
+  build: {
+    outDir: './dist',
+    target: platform === 'windows' ? 'chrome111' : 'safari16.4',
+    minify: !process.env.TAURI_DEBUG ? 'esbuild' : false,
+    emptyOutDir: true,
+    chunkSizeWarningLimit: 1024,
+    sourcemap: !!process.env.TAURI_ENV_DEBUG,
+  },
+})
